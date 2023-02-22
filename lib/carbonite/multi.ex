@@ -31,7 +31,13 @@ defmodule Carbonite.Multi do
   @spec insert_transaction(Multi.t()) :: Multi.t()
   @spec insert_transaction(Multi.t(), params()) :: Multi.t()
   @spec insert_transaction(Multi.t(), params(), [prefix_option()]) :: Multi.t()
-  def insert_transaction(%Multi{} = multi, params \\ %{}, opts \\ []) do
+  def insert_transaction(multi, params \\ %{}, opts \\ [])
+
+  def insert_transaction(%Multi{} = multi, %{meta: %{skip: true}}, _opts) do
+    multi
+  end
+
+  def insert_transaction(%Multi{} = multi, params, opts) do
     Multi.run(multi, :carbonite_transaction, fn repo, _state ->
       Carbonite.insert_transaction(repo, params, opts)
     end)
