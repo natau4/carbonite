@@ -68,7 +68,11 @@ defmodule Carbonite do
           {:ok, Transaction.t()} | {:error, Ecto.Changeset.t()}
   @spec insert_transaction(repo(), params :: map(), [prefix_option()]) ::
           {:ok, Transaction.t()} | {:error, Ecto.Changeset.t()}
-  def insert_transaction(repo, params \\ %{}, opts \\ []) do
+  def insert_transaction(repo, params \\ %{}, opts \\ [])
+
+  def insert_transaction(_repo, %{meta: %{skip: true}}, _opts), do: nil
+
+  def insert_transaction(repo, params, opts) do
     carbonite_prefix = Keyword.get(opts, :carbonite_prefix, default_prefix())
 
     # NOTE: ON CONFLICT DO NOTHING does not combine with RETURNING, so we're forcing an UPDATE.
